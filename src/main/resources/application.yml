@@ -1,0 +1,31 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    database-platform: org.hibernate.dialect.SQLServerDialect
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true	
+    path: /swagger-ui.html
+jwt:
+  secret: JWT_SECRET
+  expiration: JWT_EXPIRATION
+
