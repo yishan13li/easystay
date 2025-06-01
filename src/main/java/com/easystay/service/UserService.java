@@ -28,8 +28,11 @@ public class UserService {
         // 先從 Redis 拿
         UserDto cached = (UserDto) redisTemplate.opsForValue().get(key);
         if (cached != null) {
+            System.out.println("從 Redis 快取取得 UserDto");
             return cached;
         }
+
+        System.out.println("從資料庫取得 UserDto");
 
         // 沒有快取就查 DB
         User user = userRepository.findById(userId)

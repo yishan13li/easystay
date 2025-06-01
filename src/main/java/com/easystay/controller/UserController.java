@@ -53,17 +53,27 @@ public class UserController {
         }
     }
 	
-    @GetMapping("/me")
-    public ResponseEntity<UserDto> getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+	@GetMapping("/me")
+	public ResponseEntity<?> getCurrentUser() {
+	    try {
+	        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	        if (auth == null || !auth.isAuthenticated()) {
+	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: Not logged in or authentication is invalid.");
+	        }
 
-        UserLoggedInfo userDetails = (UserLoggedInfo) auth.getPrincipal();
-        UserDto dto = userService.getUserDtoById(userDetails.getUserId());
+	        Object principal = auth.getPrincipal();
+	        if (!(principal instanceof UserLoggedInfo)) {
+	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: Unable to retrieve user information.");
+	        }
 
-        return ResponseEntity.ok(dto);
-    }
+	        UserLoggedInfo userDetails = (UserLoggedInfo) principal;
+	        UserDto dto = userService.getUserDtoById(userDetails.getUserId());
+
+	        return ResponseEntity.ok(dto);
+
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while retrieving user information.");
+	    }
+	}
 	
 }
