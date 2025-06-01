@@ -45,6 +45,7 @@ public class AuthService implements UserDetailsService{
 
         User user = new User();
         user.setUsername(dto.getUsername());
+        user.setRole(dto.getRole());
         user.setEmail(dto.getEmail());
         user.setPassword(encodedPassword);
 

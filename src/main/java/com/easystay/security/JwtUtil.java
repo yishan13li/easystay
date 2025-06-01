@@ -48,7 +48,7 @@ public class JwtUtil {
                 .compact(); // build token string
     }
 
-    //驗證並解析 JWT Token，成功會回傳 Claims，否則丟出 JwtException。
+    //validate and parse JWT Token >　return Claims or throw JwtException。
     public Claims getClaims(String token) {
         try {
             JwtParser parser = Jwts.parser()
@@ -57,9 +57,9 @@ public class JwtUtil {
 
             Jws<Claims> jws = parser.parseSignedClaims(token); // check signature and expiration
 
-            return jws.getPayload(); // 取得有效內容 (claims)
+            return jws.getPayload(); // get claims
         } catch (JwtException e) {
-            // Token 過期、簽名錯誤、格式不正確等都會拋出這類例外
+            // Token expiration, error signature or invalid format
             throw new RuntimeException("Invalid JWT Token", e);
         }
     }

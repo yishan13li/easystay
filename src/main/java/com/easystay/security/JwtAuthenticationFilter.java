@@ -1,12 +1,14 @@
 package com.easystay.security;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -45,16 +47,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 // require userId from claims
                 Long userId = claims.get("userId", Long.class);
-
+                String role = claims.get("role", String.class);
+                String username = claims.getSubject();
+                
                 // require userLoggedInfo by userId
-                UserLoggedInfo userDetails = null;
-
-                if (userId != null) {
-                    userDetails = (UserLoggedInfo) authService.loadUserById(userId);
-                } else {
-                    String usernameOrEmail = claims.getSubject();
-                    userDetails = (UserLoggedInfo) authService.loadUserByUsername(usernameOrEmail);
-                }
+                GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role.toUpperCase());
+                UserLoggedInfo userDetails = new UserLoggedInfo();
+                userDetails.setUserId(userId);
+                userDetails.setUsername(username);
+                userDetails.setAuthorities(List.of(authority));
                 
                 // set authentication to notice Spring Security the user was validated
                 UsernamePasswordAuthenticationToken authentication =
